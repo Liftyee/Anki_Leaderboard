@@ -56,6 +56,7 @@ def logIn(request):
 	except:
 		return HttpResponse(json.dumps("Error"))
 
+	# TODO: Check whether there is already an auth token, and reissue (?) the token again if so
 	hash = ph.hash(pwd)
 	authToken = secrets.token_hex(nbytes=64)
 	c.execute("UPDATE Leaderboard SET Token = (?), hash = (?) WHERE Username = (?)", (authToken, hash, username))
@@ -206,6 +207,7 @@ def newPassword(request, token):
 def auth_user(user, token):
 	conn = sqlite3.connect(database_path)
 	c = conn.cursor()
+	# TODO: Check if token is expired, and make the user log in again??
 	t = c.execute("SELECT Token FROM Leaderboard WHERE Username = (?)", (user,)).fetchone()
 	if not t:
 		return 404
